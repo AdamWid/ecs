@@ -563,14 +563,12 @@ namespace ecs
 
         ~Registry()
         {
-            myIsCurrentlySelfDestructing = true;
             for (Entity i = 0; i < myContainers.Size(); ++i)
                 delete myContainers[i];
         }
 
         void Clear()
         {
-            myIsCurrentlySelfDestructing = true;
             for (Entity i = 0; i < myContainers.Size(); ++i)
                 delete myContainers[i];
 
@@ -579,7 +577,6 @@ namespace ecs
             myEntityDestroyList.clear();
             myEntityDestroyListAfterTime.clear();
             myContainers.Clear();
-            myPollingstationPtr = nullptr;
         }
 
         Entity Create()
@@ -689,11 +686,6 @@ namespace ecs
         {
             const Entity id = Family::type<T>();
             return myContainers.Contains(id) && myContainers.Get(id)->Contains(aEntity);
-        }
-
-        inline bool IsCurrentlyDestructingDONOTUSE()
-        {
-            return myIsCurrentlySelfDestructing;
         }
 
         void Update(mys::UpdateContext& anUpdateContext)
@@ -813,8 +805,6 @@ namespace ecs
 
             return { a,b };
         }
-
-        inline void SetPollingStation(mys::PollingStation* aPollingStation) { myPollingstationPtr = aPollingStation; }
     private:
 
         template <typename T>
@@ -829,12 +819,10 @@ namespace ecs
             return c;
         }
 
-        bool myIsCurrentlySelfDestructing = false; // REMOVE THIS
         Entity myNext{};
         mys::Heap<Entity, mys::Less<Entity>> myEntityQueue;
         std::vector<Entity> myEntityDestroyList;
         std::vector<std::pair<float, Entity>> myEntityDestroyListAfterTime;
         SparseSet<IContainer*> myContainers;
-        mys::PollingStation* myPollingstationPtr;
     };
 }

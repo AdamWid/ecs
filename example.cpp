@@ -14,6 +14,9 @@ int main(void)
 		int e, f, g, h;
 	};
 
+	struct ExcludeComponent
+	{};
+
 	for (int i = 0; i < 10000; ++i)
 	{
 		ecs::Entity entity = registry.Create();
@@ -21,14 +24,18 @@ int main(void)
 
 		exampleComponent.a = entity;
 
-		if (rand() % 2 == 0)
+		if (rand() % 3 == 0)
 		{
 			RandomComponent& randomComponent = registry.Emplace<RandomComponent>(entity);
 			randomComponent.e = entity;
 		}
+		if (rand() % 3 == 0)
+		{
+			registry.Emplace<ExcludeComponent>(entity);
+		}
 	}
 
-	auto view = registry.View<ExampleComponent, RandomComponent>();
+	auto view = registry.View<ExampleComponent, RandomComponent>(ecs::Exclude<ExcludeComponent>());
 
 	for (ecs::Entity entity : view)
 	{
