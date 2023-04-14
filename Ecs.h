@@ -1,7 +1,6 @@
 #pragma once
 #include "Assert.h"
 #include <cstdint>
-#include <type_traits>
 #include <algorithm>
 #include "Entity.h"
 #include "Reference.h"
@@ -17,17 +16,17 @@ namespace ecs
     template <typename...>
     struct TList;
 
-    class Family
+    class TypeID
     {
     public:
         template <typename>
-        static Entity type() noexcept
+        static Entity Type() noexcept
         {
-            static const Entity value = identifier();
+            static const Entity value = NextType();
             return value;
         }
     private:
-        static Entity identifier() noexcept
+        static Entity NextType() noexcept
         {
             static Entity value = 0;
             return value++;
@@ -629,7 +628,7 @@ namespace ecs
         {
             ECS_ASSERT(aEntity != nullentity);
 
-            const Entity id = Family::type<T>();
+            const Entity id = TypeID::Type<T>();
 
             ECS_ASSERT((myContainers.Size() && myContainers.Contains(id)) && "No such components exist");
 
@@ -643,7 +642,7 @@ namespace ecs
         {
             ECS_ASSERT(aEntity != nullentity);
 
-            const Entity id = Family::type<T>();
+            const Entity id = TypeID::Type<T>();
 
             ECS_ASSERT((myContainers.Size() && myContainers.Contains(id)) && "No such components exist");
 
@@ -672,7 +671,7 @@ namespace ecs
         {
             ECS_ASSERT(aEntity != nullentity);
 
-            const Entity id = Family::type<T>();
+            const Entity id = TypeID::Type<T>();
 
             ECS_ASSERT((myContainers.Size() && myContainers.Contains(id)) && "No such components exist");
 
@@ -684,7 +683,7 @@ namespace ecs
         template <typename T>
         bool Contains(Entity aEntity)
         {
-            const Entity id = Family::type<T>();
+            const Entity id = TypeID::Type<T>();
             return myContainers.Contains(id) && myContainers.Get(id)->Contains(aEntity);
         }
 
@@ -761,7 +760,7 @@ namespace ecs
         template <typename T>
         ecs::Entity GetEntityOf(T& someType)
         {
-            const Entity id = Family::type<T>();
+            const Entity id = TypeID::Type<T>();
             ECS_ASSERT((myContainers.Size() && myContainers.Contains(id)) && "No such components exist");
 
             Container<T>* c = (Container<T>*)myContainers.Get(id);
@@ -810,7 +809,7 @@ namespace ecs
         template <typename T>
         Container<T>* GetContainer()
         {
-            const Entity id = Family::type<T>();
+            const Entity id = TypeID::Type<T>();
             if (myContainers.Size() && myContainers.Contains(id))
                 return (Container<T>*)myContainers.Get(id);
 

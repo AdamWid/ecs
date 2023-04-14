@@ -17,6 +17,7 @@ int main(void)
 	struct ExcludeComponent
 	{};
 
+
 	for (int i = 0; i < 10000; ++i)
 	{
 		ecs::Entity entity = registry.Create();
